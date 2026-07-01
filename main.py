@@ -52,14 +52,15 @@ def get_user_from_key(api_key: str):
 
 # ============ LLM SETUP ============
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-if not GROQ_API_KEY:
-    raise ValueError("GROQ_API_KEY not set")
 
-llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
-    temperature=0.0,
-    groq_api_key=GROQ_API_KEY
-)
+def get_llm():
+    if not GROQ_API_KEY:
+        raise HTTPException(status_code=500, detail="GROQ_API_KEY not configured")
+    return ChatGroq(
+        model="llama-3.3-70b-versatile",
+        temperature=0.0,
+        groq_api_key=GROQ_API_KEY
+    )
 
 # ============ PRICING ============
 MODEL_PRICING = {
@@ -141,7 +142,7 @@ def ask(q: Question, x_api_key: str = Header(...)):
     
     # LLM Call (real Groq call)
     prompt = ChatPromptTemplate.from_template("Answer briefly: {question}")
-    chain = prompt | llm | StrOutputParser()
+    chain = prompt | get_llm() | StrOutputParser()
     answer = chain.invoke({"question": q.question})
     
     # Simulate token counts (Groq returns usage in response)
