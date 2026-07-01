@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ai_costs
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/ai_costs
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
