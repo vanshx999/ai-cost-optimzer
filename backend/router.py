@@ -17,13 +17,13 @@ from pydantic import BaseModel, Field
 from langchain_groq import ChatGroq
 
 cheap_llm = ChatGroq(
-    model="openai/gpt-oss-20b",  # Cheap, works
+    model="llama-3.3-70b-versatile",
     temperature=0.0,
     groq_api_key=os.getenv("GROQ_API_KEY")
 )
 
 expensive_llm = ChatGroq(
-    model="meta-llama/llama-4-scout-17b-16e-instruct",  # More capable
+    model="mixtral-8x7b-32768",
     temperature=0.0,
     groq_api_key=os.getenv("GROQ_API_KEY")
 )
@@ -130,10 +130,10 @@ Question: "{question}"
         complexity = "simple"
     
     model_map = {
-        "simple": ("deepseek/deepseek-chat-v3-0324:free", 0.0),
-        "complex": ("meta-llama/llama-4-scout:free", 0.0)
+        "simple": ("llama-3.3-70b-versatile", 0.0),
+        "complex": ("mixtral-8x7b-32768", 0.0)
     }
-    model_used, cost = model_map.get(complexity, ("deepseek/deepseek-chat-v3-0324:free", 0.0))
+    model_used, cost = model_map.get(complexity, ("llama-3.3-70b-versatile", 0.0))
     
     return {
         **state,
@@ -154,7 +154,7 @@ def execute_tool(state: RouterState) -> RouterState:
             f"Total Requests: 47\n"
             f"Total Cost: $0.005832\n"
             f"Breakdown by Model:\n"
-            f"  - llama3-8b-8192: $0.005832 (47 requests)"
+            f"  - llama-3.3-70b-versatile: $0.005832 (47 requests)"
         )
     elif intent == "logs":
         limit = state["tool_args"].get("limit", 10)

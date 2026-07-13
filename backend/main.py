@@ -131,7 +131,7 @@ def ask(q: Question, x_api_key: str = Header(...)):
         raise HTTPException(status_code=401, detail="Invalid API key")
     
     # Cache check
-    model = "llama3-8b-8192"
+    model = "llama-3.3-70b-versatile"
     cache_key = get_cache_key(q.question, model, user["user_id"])
     cached = get_cached_answer(cache_key)
     
