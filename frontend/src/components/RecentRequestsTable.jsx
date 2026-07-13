@@ -1,9 +1,9 @@
 const ROWS = [
-  { id: 1, user: 'vansh', model: 'llama3-8b-8192', tokens: 42, cost: 0.000042, cached: false, time: '2 min ago' },
-  { id: 2, user: 'vansh', model: 'llama3-8b-8192', tokens: 128, cost: 0.000128, cached: true, time: '5 min ago' },
-  { id: 3, user: 'friend', model: 'llama3-8b-8192', tokens: 64, cost: 0.000064, cached: false, time: '12 min ago' },
-  { id: 4, user: 'vansh', model: 'llama3-8b-8192', tokens: 256, cost: 0.000256, cached: false, time: '18 min ago' },
-  { id: 5, user: 'friend', model: 'llama3-8b-8192', tokens: 16, cost: 0.000016, cached: true, time: '25 min ago' },
+  { id: 1, user: 'vansh', model: 'llama-3.3-70b-versatile', tokens: 42, cost: 0.000042, cached: false, time: '2 min ago' },
+  { id: 2, user: 'vansh', model: 'llama-3.3-70b-versatile', tokens: 128, cost: 0.000128, cached: true, time: '5 min ago' },
+  { id: 3, user: 'friend', model: 'llama-3.3-70b-versatile', tokens: 64, cost: 0.000064, cached: false, time: '12 min ago' },
+  { id: 4, user: 'vansh', model: 'llama-3.3-70b-versatile', tokens: 256, cost: 0.000256, cached: false, time: '18 min ago' },
+  { id: 5, user: 'friend', model: 'llama-3.3-70b-versatile', tokens: 16, cost: 0.000016, cached: true, time: '25 min ago' },
 ];
 
 export default function RecentRequestsTable() {

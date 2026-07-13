@@ -9,7 +9,7 @@ const client = axios.create({
 });
 
 export const checkHealth = () =>
-  client.get('/health').then((r) => r.data);
+  client.get('/stats').then((r) => r.data);
 
 export const fetchStats = () =>
   client.get('/stats').then((r) => r.data);
