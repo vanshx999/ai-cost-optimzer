@@ -6,6 +6,12 @@
   --color-dash-accent: #00ff88;
   --color-dash-muted: #6b7280;
   --color-dash-border: #2d2d44;
+  --animate-fadeIn: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 body {

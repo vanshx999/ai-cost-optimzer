@@ -23,7 +23,7 @@ app.add_middleware(
 )
 
 # ============ DATABASE (PostgreSQL) ============
-DATABASE_URL = "postgresql://localhost:5432/ai_costs"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost:5432/ai_costs")
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
