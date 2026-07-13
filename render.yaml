@@ -9,3 +9,16 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
+
+  - type: web
+    name: ai-cost-optimizer-dashboard
+    runtime: node
+    repo: https://github.com/vanshx999/ai-cost-optimzer
+    buildCommand: npm install && npm run build
+    startCommand: node server.js
+    rootDir: frontend
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: VITE_API_URL
+        sync: false
