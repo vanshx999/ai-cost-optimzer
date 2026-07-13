@@ -54,13 +54,19 @@ def get_user_from_key(api_key: str):
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 def get_llm():
-    if not GROQ_API_KEY:
+    key = os.getenv("GROQ_API_KEY")
+    if not key:
         raise HTTPException(status_code=500, detail="GROQ_API_KEY not configured")
-    return ChatGroq(
-        model="llama-3.3-70b-versatile",
-        temperature=0.0,
-        groq_api_key=GROQ_API_KEY
-    )
+    if not key.startswith("gsk_"):
+        raise HTTPException(status_code=500, detail=f"GROQ_API_KEY looks invalid (starts with {key[:4]})")
+    try:
+        return ChatGroq(
+            model="llama-3.3-70b-versatile",
+            temperature=0.0,
+            groq_api_key=key
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"ChatGroq init failed: {str(e)}")
 
 # ============ PRICING ============
 MODEL_PRICING = {
@@ -105,20 +111,23 @@ class Answer(BaseModel):
 # ============ LOGGING FUNCTION ============
 def log_request(user_id: str, model: str, tokens_in: int, tokens_out: int, 
                 cost: float, cached: bool, latency_ms: int):
-    """Write one row to PostgreSQL."""
-    session = Session()
-    log = RequestLog(
-        user_id=user_id,
-        model=model,
-        tokens_in=tokens_in,
-        tokens_out=tokens_out,
-        cost=cost,
-        cached=cached,
-        latency_ms=latency_ms
-    )
-    session.add(log)
-    session.commit()
-    session.close()
+    """Write one row to PostgreSQL (best-effort)."""
+    try:
+        session = Session()
+        log = RequestLog(
+            user_id=user_id,
+            model=model,
+            tokens_in=tokens_in,
+            tokens_out=tokens_out,
+            cost=cost,
+            cached=cached,
+            latency_ms=latency_ms
+        )
+        session.add(log)
+        session.commit()
+        session.close()
+    except Exception as e:
+        print(f"DB log failed (non-fatal): {e}")
 
 # ============ ENDPOINT ============
 @app.post("/ask", response_model=Answer)
@@ -142,8 +151,11 @@ def ask(q: Question, x_api_key: str = Header(...)):
     
     # LLM Call (real Groq call)
     prompt = ChatPromptTemplate.from_template("Answer briefly: {question}")
-    chain = prompt | get_llm() | StrOutputParser()
-    answer = chain.invoke({"question": q.question})
+    try:
+        chain = prompt | get_llm() | StrOutputParser()
+        answer = chain.invoke({"question": q.question})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Groq LLM call failed: {str(e)}")
     
     # Simulate token counts (Groq returns usage in response)
     tokens_in = len(q.question.split()) * 2  # Rough estimate
@@ -185,7 +197,7 @@ def stats(x_api_key: str = Header(...)):
         return {
             "total_requests": 47,
             "total_cost": 0.005832,
-            "cost_per_model": {"llama3-8b-8192": 0.005832}
+            "cost_per_model": {"llama-3.3-70b-versatile": 0.005832}
         }
 
 @app.get("/health")
